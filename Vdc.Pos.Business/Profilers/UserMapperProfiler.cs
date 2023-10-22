@@ -16,8 +16,6 @@ namespace Vdc.Pos.Business.Mappers
         {
             CreateMap<UserRequestDto, User>();
             CreateMap<User, UserAuthResponseDto>();
-               
-
         }
     }
 }

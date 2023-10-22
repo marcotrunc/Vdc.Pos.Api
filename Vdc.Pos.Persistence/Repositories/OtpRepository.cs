@@ -33,15 +33,14 @@ namespace Vdc.Pos.Persistence.Repositories
         {
             return await _dbContext.Otps.AsNoTracking().FirstOrDefaultAsync(o => o.OtpCode.SequenceEqual(otpCodeSearched));
         }
+        public async Task<Otp?> GetLastOptByUserId(Guid userId)
+        {
+            return await _dbContext.Otps.AsNoTracking().Where(o => o.UserId == userId).OrderByDescending(e => e.CreatedOn).FirstOrDefaultAsync();
+        }
 
         public async ValueTask<EntityEntry<Otp>?> InsertAsync(Otp otp)
         {
             return await _dbContext.Otps.AddAsync(otp);
-        }
-
-        public async Task<Otp?> GetLastOptByUserId(Guid userId)
-        {
-            return await _dbContext.Otps.AsNoTracking().Where(o => o.UserId == userId).OrderByDescending(e => e.CreatedOn).FirstOrDefaultAsync();
         }
     }
 }

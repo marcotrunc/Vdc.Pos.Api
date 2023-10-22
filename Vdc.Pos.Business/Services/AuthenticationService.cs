@@ -94,17 +94,15 @@ namespace Vdc.Pos.Business.Services
                 throw new NullReferenceException("Nessun elemento Utente corrispondente allo username inserito");
             }
 
-            if(user.IsDeleted || user.IsEmailVerified == false || user.IsActived == false || user.IsEmailVerified)
-            {
-                throw new Exception($"L' {request.Username} non è abilitato.");
-            }
-
-            
             if (IsPassWordHashVerified(request.Password, user.PasswordHash, user.PasswordSalt) == false)
             {
                 throw new Exception("Password Errata");
             }
 
+            if(IsUserDisabled(user))
+            {
+                throw new Exception($"L' utente {request.Username} non è abilitato.");
+            }
             string accessToken = this.CreateToken(user);
 
             var userLogged = _mapper.Map<UserAuthResponseDto>(user);
@@ -187,6 +185,11 @@ namespace Vdc.Pos.Business.Services
             {
                 return accessToken;
             }
+        }
+
+        private bool IsUserDisabled(User user)
+        {
+            return user.IsDeleted || user.IsEmailVerified == false || user.IsActived == false;
         }
 
         private string GenerateRandomPassword(int passwordLength)

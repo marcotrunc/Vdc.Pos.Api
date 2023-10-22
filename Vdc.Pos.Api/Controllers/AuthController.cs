@@ -44,7 +44,7 @@ namespace Vdc.Pos.Api.Controllers
 
                 string message = @$"<p>
                                         Ciao {userRegistered.Name},<br> 
-                                        Entra in Vdc Pos e clicca 'Primo accesso' in fondo a destra.<br> 
+                                        Entra in Vdc POS e clicca 'Primo accesso' in fondo a destra.<br> 
                                         Dopodiché ti sarà possibile settare la password.<br>
                                         Grazie
                                         <br>
@@ -80,25 +80,41 @@ namespace Vdc.Pos.Api.Controllers
         }
 
         [HttpPost("updatePassword")]
-        public async Task<ActionResult<UserAuthResponseDto>> UpdatePassword()
+        public async Task<ActionResult<UserAuthResponseDto>> UpdatePassword(UpdatePasswordModuleRequestDTO model)
         {
             try
             {
-                
+                return await _userServices.UpdatePassword(model);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            return new UserAuthResponseDto();
         }
 
         [HttpGet("otp-validation")]
-        public async Task<ActionResult<bool>> IsOtpValidationOvercome([FromQuery] string otp, Guid userId)
+        public async Task<ActionResult<bool>> IsOtpValidationOvercome([FromQuery] string otp, string email)
         {
             try 
             {
-               return await _otpServices.IsOtpValidationOvercome(otp, userId);
+                Guid userId = await _userServices.GetUserGuidFromEmailAsync(email);
+
+                bool isOtpValidated = await _otpServices.IsOtpValidationOvercome(otp, userId);
+
+                if(isOtpValidated == false) 
+                {
+                    return false;
+                }
+
+                var isUserEmailVerified = await _userServices.SetUserMailVerified(userId);
+
+                if(isUserEmailVerified == true)
+                {
+                    return true;
+                }
+
+                throw new Exception("Otp Valido ma utente non aggiornato, contattare l'assistenza");
+                
             }
             catch (Exception ex) 
             {

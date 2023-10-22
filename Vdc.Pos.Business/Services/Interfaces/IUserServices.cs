@@ -11,5 +11,7 @@ namespace Vdc.Pos.Business.Services.Interfaces
     public interface IUserServices
     {
         Task<Guid> GetUserGuidFromEmailAsync(string email);
+        Task<bool> SetUserMailVerified(Guid userId);
+        Task<UserAuthResponseDto> UpdatePassword(UpdatePasswordModuleRequestDTO updatePasswordModel);
     }
 }

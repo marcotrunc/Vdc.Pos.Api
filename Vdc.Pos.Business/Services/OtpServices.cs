@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,14 +124,16 @@ namespace Vdc.Pos.Business.Services
 
             bool isOtpValided = IsOtpVerified(otpCodeString, passwordSalt, passwordHash);
 
-            if (isOtpValided)
-            {
-                return true;
-            }
-            else
+            if(isOtpValided == false) 
             {
                 return false;
             }
+            
+            otp.IsUsed = true;
+            await _unitOfWork.UpdateAsync(otp);
+            
+            return true;
+            
         }
         #endregion
 

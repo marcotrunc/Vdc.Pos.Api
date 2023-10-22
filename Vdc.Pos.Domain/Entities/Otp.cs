@@ -12,8 +12,9 @@ namespace Vdc.Pos.Domain.Entities
         public int Id { get; set; }
         public Guid UserId { get; set; }
         public byte[] OtpCode { get; set; }
-        public DateTime CreatedOn { get; set; }
         public DateTime ExpiredOn { get; set; }
+        public bool IsUsed { get; set; } = false;
+        public DateTime CreatedOn { get; set; }
         public User User { get; set; }
     }
 }

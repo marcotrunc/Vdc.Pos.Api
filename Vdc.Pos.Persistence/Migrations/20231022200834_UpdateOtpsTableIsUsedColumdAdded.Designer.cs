@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vdc.Pos.Persistence.DataContext;
 
@@ -11,9 +12,11 @@ using Vdc.Pos.Persistence.DataContext;
 namespace Vdc.Pos.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231022200834_UpdateOtpsTableIsUsedColumdAdded")]
+    partial class UpdateOtpsTableIsUsedColumdAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
