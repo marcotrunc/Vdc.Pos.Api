@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Vdc.Pos.Business.UnitOfWork;
@@ -18,6 +19,9 @@ namespace Vdc.Pos.Business.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
 
+        
+        byte[] separatorEncodedBytes = Encoding.UTF8.GetBytes("separatore");
+
         public OtpServices(
             IOtpRepository otpRepository, 
             IUnitOfWork unitOfWork, 
@@ -29,7 +33,7 @@ namespace Vdc.Pos.Business.Services
             _emailService = emailService;
         }
         #region publicMethods
-        public async Task<bool> IsOtpRegisteredAndSent(string email, Guid userId,bool isRegisterPhase = false)
+        public async Task<bool> IsOtpRegisteredAndSent(string email, Guid userId)
         {
             if (email == null) 
             {
@@ -45,13 +49,16 @@ namespace Vdc.Pos.Business.Services
 
             string otpCode = this.GeneateRandomOtp(5);
 
-            byte[] otpEncodedBytes = Encoding.UTF8.GetBytes(otpCode);
+            byte[] otpSalt;
+            byte[] otpHash;
 
+            Utility.HashString(otpCode,out otpHash,out otpSalt);
+            
             Otp otp = new Otp
             {
-                OtpCode = otpEncodedBytes,
+                OtpCode = otpSalt.Concat(separatorEncodedBytes).Concat(otpHash).ToArray(),
                 UserId = userId,
-                ExpiredOn = isRegisterPhase ? DateTime.UtcNow.AddDays(3) : DateTime.UtcNow.AddMinutes(5).ToLocalTime(),
+                ExpiredOn = DateTime.UtcNow.AddMinutes(5).ToLocalTime(),
             };
 
             var otpAdded = await _otpRepository.InsertAsync(otp);
@@ -68,17 +75,13 @@ namespace Vdc.Pos.Business.Services
                 return false;
             }
 
-            string messageRegisterPhase =    @$"<div> 
+            string message =    @$"<div> 
                                                     <p>
-                                                        Ciao, </br>
-                                                        Una volta aperta la pagina di Login di VDC POS </br>
-                                                        Clicca in basso a destra  su Primo Accesso. </br>
-                                                        Inserisci la mail, che nel tuo caso è: <strong>{email}</strong>.</br>
-                                                        Il codice per poter procedere alla fase di autenticazione è <strong>{otpCode}</strong> in scadenza il {otpAdded.Entity.ExpiredOn}.</br>
-                                                        In seguito sarà possibile impostare la password.</br>
-                                                        </br>
-                                                        </br>
-                                                        Buon Lavoro</br>
+                                                        Ciao, <br>
+                                                        Usa il codice <strong>{otpCode}</strong> per confermare la tua identità.
+                                                        <br>
+                                                        <br>
+                                                        Buon Lavoro<br>
                                                         Team di VDC
                                                     </p>
                                                 </div> 
@@ -86,7 +89,7 @@ namespace Vdc.Pos.Business.Services
 
             try
             {
-                _emailService.SendEmail("marcotrunc@gmail.com", email, isRegisterPhase ? "Primo Accesso VDC POS" : "Codice OTP" , isRegisterPhase ? messageRegisterPhase : $"Il codice per poter procedere è {otpCode}");
+                _emailService.SendEmail("marcotrunc@gmail.com", email, "VDC Richiesta Codice OTP" , message);
             }
             catch (Exception ex)
             {
@@ -95,6 +98,39 @@ namespace Vdc.Pos.Business.Services
             }
 
             return true;
+        }
+
+        public async Task<bool> IsOtpValidationOvercome(string otpCodeString, Guid userId)
+        {
+            if (string.IsNullOrWhiteSpace(otpCodeString))
+            {
+                throw new ArgumentNullException("Otp Vuoto o Nullo");
+            }
+
+            var otp = await _otpRepository.GetLastOptByUserId(userId);
+
+            if(otp == null) 
+            {
+                throw new ArgumentNullException("Nessun Otp Generato per questo utente");
+            }
+
+            if(otp.ExpiredOn < DateTime.UtcNow.ToLocalTime())
+            {
+                throw new ArgumentNullException("Otp Scaduto");
+            }
+            
+            GetHashAndSaltFromOtpSaved(otp.OtpCode, out byte[] passwordSalt, out byte[] passwordHash);
+
+            bool isOtpValided = IsOtpVerified(otpCodeString, passwordSalt, passwordHash);
+
+            if (isOtpValided)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         #endregion
 
@@ -112,6 +148,60 @@ namespace Vdc.Pos.Business.Services
             }
 
             return result.ToString();
+        }
+
+        private void GetHashAndSaltFromOtpSaved(byte[] otpSaved, out byte[] passwordSalt, out byte[] passwordHash)
+        {
+            int separatorIndex = this.OtpArrayIndexOf(otpSaved, separatorEncodedBytes);
+            if (separatorIndex != -1)
+            {
+                passwordSalt = new byte[separatorIndex];
+                passwordHash = new byte[otpSaved.Length - separatorIndex - separatorEncodedBytes.Length];
+
+                Array.Copy(otpSaved, 0, passwordSalt, 0, separatorIndex);
+                Array.Copy(otpSaved, separatorIndex + separatorEncodedBytes.Length, passwordHash, 0, passwordHash.Length);
+
+            }
+            else
+            {
+                passwordHash = new byte[0];
+                passwordSalt = new byte[0];
+            }
+        }
+
+        private bool IsOtpVerified(string otp, byte[] passwordSalt, byte[] passwordHash)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(otp));
+                if (computedHash.SequenceEqual(passwordHash))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private int OtpArrayIndexOf(byte[] source, byte[] pattern)
+        {
+            for (int i = 0; i <= source.Length - pattern.Length; i++)
+            {
+                bool found = true;
+                for (int j = 0; j < pattern.Length; j++)
+                {
+                    if (source[i + j] != pattern[j])
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found)
+                    return i;
+            }
+            return -1;
         }
         #endregion
     }

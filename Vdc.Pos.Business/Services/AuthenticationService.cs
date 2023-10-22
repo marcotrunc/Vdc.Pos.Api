@@ -100,7 +100,7 @@ namespace Vdc.Pos.Business.Services
             }
 
             
-            if (VerifyPassWordHash(request.Password, user.PasswordHash, user.PasswordSalt) == false)
+            if (IsPassWordHashVerified(request.Password, user.PasswordHash, user.PasswordSalt) == false)
             {
                 throw new Exception("Password Errata");
             }
@@ -112,19 +112,35 @@ namespace Vdc.Pos.Business.Services
             
             return userLogged;
         }
+
+        //public async Task<UserAuthResponseDto> SetPasswordFromOtp(Guid userId,string newPassword, string confirmedNewPassword)
+        //{
+
+        //    //Controllo se le password sono uguali
+        //    if(String.IsNullOrEmpty(newPassword) || String.IsNullOrEmpty(confirmedNewPassword))
+        //    {
+        //        throw new Exception($"Password non valide");
+        //    }
+
+        //    if(newPassword != confirmedNewPassword)
+        //    {
+        //        throw new Exception("Le email inserite non concidono");
+        //    }
+            
+            
+        //    // Recupero l'utente associato all'otp
+
+
+        //    //Update delle password
+
+        //    //Mappo Da utente a Response
+
+        //}
         #endregion
 
         #region private methods
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) 
-        { 
-            using(var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
-        }
 
-        private bool VerifyPassWordHash(string passwordRequest, byte[] passwordHash, byte[] passwordSalt)
+        private bool IsPassWordHashVerified(string passwordRequest, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac =new HMACSHA512(passwordSalt))
             {
@@ -167,8 +183,10 @@ namespace Vdc.Pos.Business.Services
             {
                 return String.Empty;
             }
-
-            return accessToken;
+            else
+            {
+                return accessToken;
+            }
         }
 
         private string GenerateRandomPassword(int passwordLength)
@@ -185,8 +203,6 @@ namespace Vdc.Pos.Business.Services
 
             return result.ToString();
         }
-
-       
 
         #endregion
     }

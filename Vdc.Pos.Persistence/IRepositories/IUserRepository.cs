@@ -13,6 +13,7 @@ namespace Vdc.Pos.Persistence.IRepositories
         Task<User?> FindByEmailAsync(string email);
         Task<User?> FindByFullNameAsync(string name, string fullName);
         Task<User?> FindByPhoneNumberAsync(string phoneNumber);
+        Task<Guid> GetUserIdFromEmailAsync(string email);
         Task<bool> IsUniqueEmail (string email);
     }
 }

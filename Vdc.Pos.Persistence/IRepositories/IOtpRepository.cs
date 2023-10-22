@@ -12,6 +12,8 @@ namespace Vdc.Pos.Persistence.IRepositories
     public interface IOtpRepository 
     {
         Task<Otp?> GetByPrimaryKeyAsync(int id);
+        Task<Otp?> GetByOptCode(byte[] otpCodeSearched);
+        Task<Otp?> GetLastOptByUserId(Guid userId);
         ValueTask<EntityEntry<Otp>?> InsertAsync(Otp otp);
         void Delete(Otp otp);
     }
