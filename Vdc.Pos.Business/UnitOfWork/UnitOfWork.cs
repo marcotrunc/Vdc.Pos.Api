@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vdc.Pos.Persistence.DataContext;
 using static Vdc.Pos.Business.UnitOfWork.UnitOfWork;
+using Vdc.Pos.Domain.Entities;
 
 namespace Vdc.Pos.Business.UnitOfWork
 {
@@ -24,6 +25,15 @@ namespace Vdc.Pos.Business.UnitOfWork
         {
             SetTimestamps();
             return await _dbcontext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<int> UpdateAsync<T>(T entity,CancellationToken cancellationToken = default) where T : class 
+        {
+            _dbcontext.Attach(entity);
+
+            _dbcontext.Entry(entity).State = EntityState.Modified;
+            
+            return await this.CommitAsync(cancellationToken);
         }
         #endregion
 
