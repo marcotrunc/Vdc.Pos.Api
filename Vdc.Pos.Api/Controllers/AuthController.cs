@@ -13,12 +13,21 @@ namespace Vdc.Pos.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IEmailService _emailService;
+        private readonly IUserServices _userServices;
         private readonly OtpServices _otpServices;
         
 
-        public AuthController(IAuthenticationService authenticationService, OtpServices otpServices) 
+        public AuthController(
+            IAuthenticationService authenticationService, 
+            IEmailService emailService, 
+            IUserServices userServices, 
+            OtpServices otpServices
+            ) 
         {
             _authenticationService = authenticationService;
+            _emailService = emailService;
+            _userServices = userServices;
             _otpServices = otpServices;
         }
         [HttpPost("register")]
@@ -33,13 +42,19 @@ namespace Vdc.Pos.Api.Controllers
                     return BadRequest($"L'utente non è stato registrato");      
                 }
 
-                bool isOtpSent = await _otpServices.IsOtpRegisteredAndSent(userRegistered.Email, userRegistered.Id, true);
+                string message = @$"<p>
+                                        Ciao {userRegistered.Name},<br> 
+                                        Entra in Vdc Pos e clicca 'Primo accesso' in fondo a destra.<br> 
+                                        Dopodiché ti sarà possibile settare la password.<br>
+                                        Grazie
+                                        <br>
+                                        <br> 
+                                        Team VDC
+                                    </p>";
 
-                if (isOtpSent == true)
-                {
-                    // Notifica di avvenuto invio Otp per EMail
-                }
 
+                _emailService.SendEmail("noreply@vdc.it",userRegistered.Email,"Registrazione a Vdc Pos",message);
+                
                 return Ok(userRegistered); 
             }
             catch (Exception ex) 
@@ -48,12 +63,58 @@ namespace Vdc.Pos.Api.Controllers
             }
             
         }
-        [HttpPost("send-otp-first-access")]
-        public async Task<ActionResult<string>> SendOtpForFirstAccess([FromBody] string email, Guid id)
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserAuthResponseDto>> Login(UserAuthRequestDto request)
         {
             try
             {
-                bool isOtpSent = await _otpServices.IsOtpRegisteredAndSent(email, id);
+                var userAuthenticated = await _authenticationService.Login(request);
+
+                return Ok(userAuthenticated);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpPost("updatePassword")]
+        public async Task<ActionResult<UserAuthResponseDto>> UpdatePassword()
+        {
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return new UserAuthResponseDto();
+        }
+
+        [HttpGet("otp-validation")]
+        public async Task<ActionResult<bool>> IsOtpValidationOvercome([FromQuery] string otp, Guid userId)
+        {
+            try 
+            {
+               return await _otpServices.IsOtpValidationOvercome(otp, userId);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("send-otp")]
+        public async Task<ActionResult<string>> SendAndSaveOtp([FromQuery] string email)
+        {
+            try
+            {
+                Guid userId = await _userServices.GetUserGuidFromEmailAsync(email);
+
+                bool isOtpSent = await _otpServices.IsOtpRegisteredAndSent(email, userId);
+
                 if(isOtpSent == true)
                 {
                     return Ok($"OTP inviato correttamente al seguente indirizzo email: {email}");
@@ -68,19 +129,6 @@ namespace Vdc.Pos.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost("login")]
-        public async Task<ActionResult<UserAuthResponseDto>> Login(UserAuthRequestDto request)
-        {
-            try
-            {
-                var userAuthenticated = await _authenticationService.Login(request);
-                
-                return Ok(userAuthenticated);
-            }
-            catch (Exception ex)
-            {
-               return Unauthorized(ex.Message);
-            }
-        }
+        
     }
 }

@@ -53,6 +53,11 @@ namespace Vdc.Pos.Persistence.Repositories
             return await _dbContext.Users.FindAsync(id);
         }
 
+        public async Task<Guid> GetUserIdFromEmailAsync(string email)
+        {
+            return await _dbContext.Users.AsNoTracking().Where(u => u.Email == email).Select(u => u.Id).FirstAsync();
+        }
+
         public async ValueTask<EntityEntry<User>?> InsertAsync(User entity)
         {
              return await _dbContext.Users.AddAsync(entity);

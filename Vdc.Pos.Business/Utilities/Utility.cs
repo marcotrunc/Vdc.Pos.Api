@@ -5,26 +5,36 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 
 namespace Vdc.Pos.Business.Utilities
 {
     public static class Utility
-    { 
+    {
         public static bool IsConnectedToInternet()
+        {
+            try
             {
-                try
+                using (Ping ping = new Ping())
                 {
-                    using (Ping ping = new Ping())
-                    {
-                        PingReply reply = ping.Send("www.google.com");
-                        return reply.Status == IPStatus.Success;
-                    }
+                    PingReply reply = ping.Send("www.google.com");
+                    return reply.Status == IPStatus.Success;
                 }
-                catch
-                {
-                    return false; 
-                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public static void HashString(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
     }
+
+}
 
