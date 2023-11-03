@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vdc.Pos.Persistence.DataContext;
 
@@ -12,11 +11,9 @@ using Vdc.Pos.Persistence.DataContext;
 namespace Vdc.Pos.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    [Migration("20231021081221_NewNameOtpTable")]
-    partial class NewNameOtpTable
+    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,6 +37,9 @@ namespace Vdc.Pos.Persistence.Migrations
 
                     b.Property<DateTime>("ExpiredOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
 
                     b.Property<byte[]>("OtpCode")
                         .IsRequired()

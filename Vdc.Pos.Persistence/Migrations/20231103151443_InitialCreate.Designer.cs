@@ -12,8 +12,8 @@ using Vdc.Pos.Persistence.DataContext;
 namespace Vdc.Pos.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    [Migration("20231020211958_OtpTableCreation")]
-    partial class OtpTableCreation
+    [Migration("20231103151443_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,9 @@ namespace Vdc.Pos.Persistence.Migrations
                     b.Property<DateTime>("ExpiredOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
                     b.Property<byte[]>("OtpCode")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -52,7 +55,7 @@ namespace Vdc.Pos.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Otp");
+                    b.ToTable("Otps");
                 });
 
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.User", b =>
