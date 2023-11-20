@@ -56,5 +56,11 @@ namespace Vdc.Pos.Persistence.Repositories
         {
             return await _dbContext.Categories.AsNoTracking().Where(c => c.ParentId == parentId && c.Name.ToLower().Trim() == name.ToLower().Trim()).AnyAsync();
         }
+
+        public async Task<bool> IsUniqueParentCategoryName(string name)
+        {
+            return await _dbContext.Categories.AsNoTracking().Where(c => c.ParentId == null && c.Name.ToLower().Trim() == name.ToLower().Trim()).AnyAsync();
+        }
+
     }
 }
