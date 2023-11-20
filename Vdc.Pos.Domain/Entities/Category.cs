@@ -12,6 +12,7 @@ namespace Vdc.Pos.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public Guid? ParentId { get; set; } = null;
         public Category? Parent { get; set; } = null;
+        public ICollection<Variation> Variations { get; set; }
 
     }
 }

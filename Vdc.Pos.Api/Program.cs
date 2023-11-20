@@ -39,9 +39,12 @@ builder.Services.AddDbContext<ApplicationDataContext>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IEmailService, EmailGoogleServices>();
 builder.Services.AddScoped<IUserServices, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<OtpServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOtpRepository,OtpRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();  
+builder.Services.AddScoped<IVariationRepository, VariationRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();  
 
 
