@@ -9,7 +9,7 @@ using Vdc.Pos.Infrastructure.Service.Interfaces;
 namespace Vdc.Pos.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
