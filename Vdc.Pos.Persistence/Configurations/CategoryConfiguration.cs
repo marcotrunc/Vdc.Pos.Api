@@ -21,6 +21,11 @@ namespace Vdc.Pos.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(c => c.ParentId)
                 .IsRequired(false);
+            
+            builder.HasMany(c => c.Variations)
+                .WithOne(v => v.Category)
+                .HasForeignKey(v => v.ParentCategoryId)
+                .IsRequired();
         }
     }
 }
