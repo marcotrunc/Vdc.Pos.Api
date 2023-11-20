@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vdc.Pos.Persistence.DataContext;
 
@@ -11,9 +12,11 @@ using Vdc.Pos.Persistence.DataContext;
 namespace Vdc.Pos.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231110222650_AddedVariationsTable")]
+    partial class AddedVariationsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,29 +168,7 @@ namespace Vdc.Pos.Persistence.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Variation");
-                });
-
-            modelBuilder.Entity("Vdc.Pos.Domain.Entities.VariationOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VariationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VariationId");
-
-                    b.ToTable("VariationOption");
+                    b.ToTable("Variations");
                 });
 
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.Category", b =>
@@ -221,17 +202,6 @@ namespace Vdc.Pos.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Vdc.Pos.Domain.Entities.VariationOption", b =>
-                {
-                    b.HasOne("Vdc.Pos.Domain.Entities.Variation", "Variation")
-                        .WithMany("Options")
-                        .HasForeignKey("VariationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Variation");
-                });
-
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Variations");
@@ -240,11 +210,6 @@ namespace Vdc.Pos.Persistence.Migrations
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.User", b =>
                 {
                     b.Navigation("Otps");
-                });
-
-            modelBuilder.Entity("Vdc.Pos.Domain.Entities.Variation", b =>
-                {
-                    b.Navigation("Options");
                 });
 #pragma warning restore 612, 618
         }
