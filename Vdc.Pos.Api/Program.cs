@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IEmailService, EmailGoogleServices>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IVariationService, VariationService>();
 builder.Services.AddScoped<OtpServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOtpRepository,OtpRepository>();
