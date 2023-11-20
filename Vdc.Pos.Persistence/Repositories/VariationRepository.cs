@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vdc.Pos.Domain.Entities;
 using Vdc.Pos.Persistence.DataContext;
+using Vdc.Pos.Persistence.IRepositories;
 
 namespace Vdc.Pos.Persistence.Repositories
 {
@@ -33,6 +34,10 @@ namespace Vdc.Pos.Persistence.Repositories
         public async Task<bool> IsUniqueNameAsync(string name)
         {
             return !await _dbContext.Variations.AnyAsync(v => v.Name == name);
+        }
+        public async Task<bool> IsUniqueNameForParentCategoryAsync(string name, Guid? parentCategoryId)
+        {
+            return !await _dbContext.Variations.AsNoTracking().Where(c => c.ParentCategoryId == parentCategoryId && c.Name.ToLower().Trim() == name.ToLower().Trim()).AnyAsync();
         }
 
         public async ValueTask<EntityEntry<Variation>?> InsertAsync(Variation variation)

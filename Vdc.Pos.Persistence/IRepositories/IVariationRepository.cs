@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Vdc.Pos.Domain.Entities;
 
-namespace Vdc.Pos.Persistence.Repositories
+namespace Vdc.Pos.Persistence.IRepositories
 {
     public interface IVariationRepository
     {
@@ -11,5 +11,6 @@ namespace Vdc.Pos.Persistence.Repositories
         Task<IEnumerable<Variation>> GetVaritionsByParentCategoryIdAsync(Guid parentCategoryId);
         ValueTask<EntityEntry<Variation>?> InsertAsync(Variation variation);
         Task<bool> IsUniqueNameAsync(string name);
+        Task<bool> IsUniqueNameForParentCategoryAsync(string name, Guid? parentCategoryId);
     }
 }

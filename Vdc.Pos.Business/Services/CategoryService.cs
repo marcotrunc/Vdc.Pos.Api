@@ -38,41 +38,29 @@ namespace Vdc.Pos.Business.Services
                 throw new ArgumentNullException("Id Inserito nullo");
             }
 
-            try
-            {
-                var category = await _categoryRepository.GetByPrimaryKeyAsync(id);
+            
+            var category = await _categoryRepository.GetByPrimaryKeyAsync(id);
 
-                if (category == null)
-                {
-                    throw new ArgumentNullException($"L'{id} inserito non corrisponde a nessuna categoria");
-                }
-
-                return _mapper.Map<CategoryResponseDto>(category);
-            }
-            catch (Exception ex)
+            if (category == null)
             {
-                throw new Exception("Categoria Non trovata");
+                throw new ArgumentNullException($"L'{id} inserito non corrisponde a nessuna categoria");
             }
+
+            return _mapper.Map<CategoryResponseDto>(category);
 
         }
 
         public async Task<IEnumerable<CategoryResponseDto>> GetAllCategoriesAsync()
         {
-            try
-            {
-                var categories = await _categoryRepository.GetAllAsync();
+            
+            var categories = await _categoryRepository.GetAllAsync();
 
-                if (categories.Any() == false)
-                {
-                    throw new ArgumentNullException($"Nessuna categoria registrata");
-                }
-
-                return _mapper.Map<CategoryResponseDto[]>(categories);
-            }
-            catch (Exception ex)
+            if (categories.Any() == false)
             {
-                throw new Exception($"Nessuna categoria restituita");
+                throw new ArgumentNullException($"Nessuna categoria registrata");
             }
+
+            return _mapper.Map<CategoryResponseDto[]>(categories);
         }
 
         public async Task<IEnumerable<CategoryResponseDto>> GetAllParentCategoriesAsync()
@@ -96,21 +84,16 @@ namespace Vdc.Pos.Business.Services
 
         public async Task<IEnumerable<CategoryResponseDto>> GetAllChildCategoriesAsync()
         {
-            try
-            {
-                var childCategories = await _categoryRepository.FindAllChildCategory();
+            
+            var childCategories = await _categoryRepository.FindAllChildCategory();
 
-                if (childCategories.Any() == false)
-                {
-                    throw new ArgumentNullException($"Nessuna categoria registrata");
-                }
-
-                return _mapper.Map<CategoryResponseDto[]>(childCategories);
-            }
-            catch (Exception ex)
+            if (childCategories.Any() == false)
             {
-                throw new Exception("Nessuna sotto-categoria recuperata");
+                throw new ArgumentNullException($"Nessuna categoria registrata");
             }
+
+            return _mapper.Map<CategoryResponseDto[]>(childCategories);
+            
         }
 
         public async Task<CategoryResponseDto> InsertCategoryAsync(CategoryRequestDto categoryToInsert)
@@ -168,7 +151,7 @@ namespace Vdc.Pos.Business.Services
 
             var category = await _categoryRepository.GetByPrimaryKeyAsync(id);
 
-            if (category is null)
+            if (category is null)   
             {
                 throw new ArgumentNullException($"Nessuna categoria associata a questo id");
             }

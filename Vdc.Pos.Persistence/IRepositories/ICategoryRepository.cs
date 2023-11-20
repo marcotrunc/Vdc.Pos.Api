@@ -12,6 +12,7 @@ namespace Vdc.Pos.Persistence.IRepositories
     {
         Task<IEnumerable<Category>> FindAllParentCategory();
         Task<IEnumerable<Category>> FindAllChildCategory();
+        Task<string?> GetNameOfCategoryByIdAsync(Guid id);
         Task<bool> IsUniqueCategoryNameForThisParentCategory(string name, Guid parentId);
         Task<bool> IsUniqueParentCategoryName(string name);
     }

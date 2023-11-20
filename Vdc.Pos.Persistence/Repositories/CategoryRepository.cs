@@ -47,6 +47,12 @@ namespace Vdc.Pos.Persistence.Repositories
             return await _dbContext.Categories.FindAsync(id);
         }
 
+        public async Task<string?> GetNameOfCategoryByIdAsync(Guid id)
+        {
+            var category = await _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            return  category?.Name ?? null;  
+        } 
+
         public async ValueTask<EntityEntry<Category>?> InsertAsync(Category entity)
         {
             return await _dbContext.Categories.AddAsync(entity);

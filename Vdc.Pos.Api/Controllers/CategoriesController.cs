@@ -90,7 +90,7 @@ namespace Vdc.Pos.Api.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryResponseDto>> UpdateCategory(Guid id, CategoryRequestDto category)
+        public async Task<ActionResult<CategoryResponseDto>> UpdateCategoryAsync(Guid id, CategoryRequestDto category)
         {
             try
             {
