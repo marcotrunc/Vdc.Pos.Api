@@ -117,7 +117,7 @@ namespace Vdc.Pos.Business.Services
         }
         #endregion
 
-        #region rivate Methods
+        #region private Methods
         private bool IsUserDisabled(User user)
         {
             return user.IsDeleted || user.IsEmailVerified == false || user.IsActived == false;
