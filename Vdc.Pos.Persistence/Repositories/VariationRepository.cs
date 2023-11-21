@@ -37,9 +37,16 @@ namespace Vdc.Pos.Persistence.Repositories
         }
         public async Task<bool> IsUniqueNameForParentCategoryAsync(string name, Guid? parentCategoryId)
         {
-            return !await _dbContext.Variations.AsNoTracking().Where(c => c.ParentCategoryId == parentCategoryId && c.Name.ToLower().Trim() == name.ToLower().Trim()).AnyAsync();
+            return !await _dbContext.Variations.AsNoTracking().Where(v => v.ParentCategoryId == parentCategoryId && v.Name.ToLower().Trim() == name.ToLower().Trim()).AnyAsync();
         }
-
+        public async Task<bool> IsVariationExistsById(int id)
+        {
+            return await _dbContext.Variations.AsNoTracking().AnyAsync(v => v.Id == id);
+        }
+        public async Task<string> GetNameOfVariationByIdAsync(int id)
+        {
+            return await _dbContext.Variations.AsNoTracking().Where(v => v.Id == id).Select(v => v.Name).FirstAsync();  
+        }
         public async ValueTask<EntityEntry<Variation>?> InsertAsync(Variation variation)
         {
             return await _dbContext.Variations.AddAsync(variation);

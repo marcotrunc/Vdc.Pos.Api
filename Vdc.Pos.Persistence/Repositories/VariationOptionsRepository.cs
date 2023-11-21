@@ -32,7 +32,7 @@ namespace Vdc.Pos.Persistence.Repositories
         }
         public async Task<bool> IsUniqueValueForVariationAsync(string value, int variationId)
         {
-            return await _dbContext.VariationOptions.AnyAsync(vo => vo.Value.Trim().ToLower() == value.Trim().ToLower() && vo.VariationId == variationId);
+            return !await _dbContext.VariationOptions.AnyAsync(vo => vo.Value.Trim().ToLower() == value.Trim().ToLower() && vo.VariationId == variationId);
         }
         public async ValueTask<EntityEntry<VariationOption>?> InsertAsync(VariationOption variationOption)
         {

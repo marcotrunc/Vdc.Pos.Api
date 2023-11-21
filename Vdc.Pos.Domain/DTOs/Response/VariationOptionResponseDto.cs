@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Vdc.Pos.Domain.DTOs.Requests
+namespace Vdc.Pos.Domain.DTOs.Response
 {
-    public class VariationOptionRequestDto
+    public class VariationOptionResponseDto
     {
+        public int Id { get; set; }
         public int VariationId { get; set; }
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; set; }
     }
 }
