@@ -41,11 +41,13 @@ builder.Services.AddTransient<IEmailService, EmailGoogleServices>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IVariationService, VariationService>();
+builder.Services.AddScoped<IVariationOptionService,VariationOptionService>();
 builder.Services.AddScoped<OtpServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOtpRepository,OtpRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();  
 builder.Services.AddScoped<IVariationRepository, VariationRepository>();
+builder.Services.AddScoped<IVariationOptionsRepository, VariationOptionsRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();  
 
 
