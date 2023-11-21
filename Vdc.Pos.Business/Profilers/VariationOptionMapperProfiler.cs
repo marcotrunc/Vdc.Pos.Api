@@ -14,7 +14,7 @@ namespace Vdc.Pos.Business.Profilers
     {
         public VariationOptionMapperProfiler()
         {
-            CreateMap<VariationOption, VariationResponseDto>();
+            CreateMap<VariationOption, VariationOptionResponseDto>();
             CreateMap<VariationOptionRequestDto, VariationOption>();
         }
     }
