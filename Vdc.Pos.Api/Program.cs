@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Vdc.Pos.Business.Configurations;
 using Vdc.Pos.Business.Mappers;
 using Vdc.Pos.Business.Services;
 using Vdc.Pos.Business.Services.Interfaces;
@@ -17,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Binding For Settings
 builder.Services.Configure<EmailSmtpSettings>(builder.Configuration.GetSection("EmailSmtpSettings"));
+builder.Services.Configure<ApplicationConfigurations>(builder.Configuration.GetSection("ApplicationConfigurations"));
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -38,6 +40,7 @@ builder.Services.AddDbContext<ApplicationDataContext>(options =>
 // Add LifeTime Service
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IEmailService, EmailGoogleServices>();
+builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IVariationService, VariationService>();
@@ -48,6 +51,7 @@ builder.Services.AddScoped<IOtpRepository,OtpRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();  
 builder.Services.AddScoped<IVariationRepository, VariationRepository>();
 builder.Services.AddScoped<IVariationOptionsRepository, VariationOptionsRepository>();
+builder.Services.AddScoped<IBrandrepository, BrandRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();  
 
 
