@@ -17,6 +17,7 @@ namespace Vdc.Pos.Persistence.DataContext
         public DbSet<Category> Categories { get; set; }
         public DbSet<Variation> Variations { get; set; }
         public DbSet<VariationOption> VariationOptions { get; set; }
+        public DbSet<Brand> Brands { get; set; }
 
         public ApplicationDataContext(DbContextOptions<ApplicationDataContext> options): base(options)
         { 

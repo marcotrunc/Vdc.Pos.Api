@@ -16,5 +16,18 @@ namespace Vdc.Pos.Business.Validators
             string pattern = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
             return Regex.IsMatch(email, pattern);
         }
+
+        public static bool IsImageExtensionValid(string imageExtension)
+        {
+            string[] supportedTypes = new[] { "jpeg", "png", "jpg" };
+            if (supportedTypes.Contains(imageExtension))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        } 
     }
 }

@@ -12,8 +12,8 @@ using Vdc.Pos.Persistence.DataContext;
 namespace Vdc.Pos.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    [Migration("20231110222650_AddedVariationsTable")]
-    partial class AddedVariationsTable
+    [Migration("20231121092238_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,46 @@ namespace Vdc.Pos.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Vdc.Pos.Domain.Entities.Brand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImgPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
 
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.Category", b =>
                 {
@@ -171,6 +211,28 @@ namespace Vdc.Pos.Persistence.Migrations
                     b.ToTable("Variations");
                 });
 
+            modelBuilder.Entity("Vdc.Pos.Domain.Entities.VariationOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VariationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VariationId");
+
+                    b.ToTable("VariationOptions");
+                });
+
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.Category", b =>
                 {
                     b.HasOne("Vdc.Pos.Domain.Entities.Category", "Parent")
@@ -202,6 +264,17 @@ namespace Vdc.Pos.Persistence.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Vdc.Pos.Domain.Entities.VariationOption", b =>
+                {
+                    b.HasOne("Vdc.Pos.Domain.Entities.Variation", "Variation")
+                        .WithMany("Options")
+                        .HasForeignKey("VariationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variation");
+                });
+
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Variations");
@@ -210,6 +283,11 @@ namespace Vdc.Pos.Persistence.Migrations
             modelBuilder.Entity("Vdc.Pos.Domain.Entities.User", b =>
                 {
                     b.Navigation("Otps");
+                });
+
+            modelBuilder.Entity("Vdc.Pos.Domain.Entities.Variation", b =>
+                {
+                    b.Navigation("Options");
                 });
 #pragma warning restore 612, 618
         }
