@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace Vdc.Pos.Domain.DTOs.Response
 {
-    public class CategoryResponseDto
+    public class CategoryResponseDto : CommonResponseDto<Guid>
     {
-        public Guid Id { get; set; }    
         public string Name { get; set; }
         public Guid? ParentId { get; set; } = null;
-        public DateTime CreatedOn { get; set; } 
-        public DateTime UpdatedOn { get; set;}
-        public DateTime? DeletedOn { get; set; }
     }
 }
